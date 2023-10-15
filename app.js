@@ -47,28 +47,37 @@ app.get("/players/", async (request, response) => {
   console.log(playerNameList);
 });
 app.post("/players/", async (request, response) => {
-  let addPlayerDetails = request.body;
+  let addPlayerDetails = {
+    playerName: "Vishal",
+    jerseyNumber: 17,
+    role: "Bowler",
+  };
+  console.log(addPlayerDetails);
   let { playerName, jerseyNumber, role } = addPlayerDetails;
+  console.log();
   let addQuery = `
               INSERT INTO
-                 cricket_team(player_name,jersey_number,role)
+                 cricket_team (player_name,jersey_number,role)
               VALUES
-              (
-                  ${playerName},
+              (  
+                  '${playerName}',
                   ${jerseyNumber},
-                  ${role}
+                  '${role}'
               );
     `;
-  await db.run(addQuery);
+  let dbResponse = await db.run(addQuery);
+  const playerId = dbResponse.lastID;
+  console.log(playerId);
   response.send("Player Added to Team");
 });
 
 app.get("/players/:playerId/", async (request, response) => {
   let { playerId } = request.params;
+  console.log(playerId);
   let idQuery = `
                 SELECT *
                 FROM cricket_team
-                WHERE player_id = ${playerId};`;
+                WHERE player_id = ${1};`;
   let playerDetails = await db.get(idQuery);
   let singlePlayerDetail = {
     playerId: playerDetails.player_id,
@@ -86,9 +95,9 @@ app.put("/players/:playerId/", async (request, response) => {
   let putQuery = `UPDATE 
                           cricket_team
                         SET 
-                           player_name = ${playerName},
+                           player_name = '${playerName}',
                            jersey_number = ${jerseyNumber},
-                           role = ${role}
+                           role = '${role}'
                         WHERE
                            player_id = ${playerId};`;
   await db.run(putQuery);
@@ -105,3 +114,4 @@ app.delete("/players/:playerId/", async (request, response) => {
 });
 
 module.exports = app;
+
