@@ -47,11 +47,7 @@ app.get("/players/", async (request, response) => {
   console.log(playerNameList);
 });
 app.post("/players/", async (request, response) => {
-  let addPlayerDetails = {
-    playerName: "Vishal",
-    jerseyNumber: 17,
-    role: "Bowler",
-  };
+  let addPlayerDetails = request.body;
   console.log(addPlayerDetails);
   let { playerName, jerseyNumber, role } = addPlayerDetails;
   console.log();
@@ -65,9 +61,7 @@ app.post("/players/", async (request, response) => {
                   '${role}'
               );
     `;
-  let dbResponse = await db.run(addQuery);
-  const playerId = dbResponse.lastID;
-  console.log(playerId);
+  await db.run(addQuery);
   response.send("Player Added to Team");
 });
 
@@ -77,7 +71,7 @@ app.get("/players/:playerId/", async (request, response) => {
   let idQuery = `
                 SELECT *
                 FROM cricket_team
-                WHERE player_id = ${1};`;
+                WHERE player_id = ${playerId};`;
   let playerDetails = await db.get(idQuery);
   let singlePlayerDetail = {
     playerId: playerDetails.player_id,
@@ -114,4 +108,5 @@ app.delete("/players/:playerId/", async (request, response) => {
 });
 
 module.exports = app;
+
 
